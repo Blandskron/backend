@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat IA IlisSolutions</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #chat-container { width: 50%; margin: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+        #messages { height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 5px; text-align: left; }
+        .user { color: blue; }
+        .bot { color: green; }
+        input, button { margin-top: 10px; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Chat IA IlisSolutions</h1>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <input type="text" id="user-input" placeholder="Escribe tu mensaje...">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let inputField = document.getElementById("user-input");
+            let message = inputField.value.trim();
+            if (!message) return;
+
+            let messagesDiv = document.getElementById("messages");
+            messagesDiv.innerHTML += `<p class='user'><strong>Tú:</strong> ${message}</p>`;
+            inputField.value = "";
+
+            try {
+                let response = await fetch("http://127.0.0.1:8000/query", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: message })
+                });
+                let data = await response.json();
+                messagesDiv.innerHTML += `<p class='bot'>${data.response}</p>`;
+            } catch (error) {
+                messagesDiv.innerHTML += `<p class='bot'><strong>Error:</strong> No se pudo obtener respuesta.</p>`;
+            }
+
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>
